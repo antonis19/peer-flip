@@ -5,6 +5,7 @@ import RoomClientContext from '../contexts/RoomClientContext';
 import { ErrorContext } from '../contexts/ErrorContext';
 import { LoadingButton } from '@mui/lab';
 import { RoomStatus } from './RoomStatus';
+import UrlCopy from './UrlCopy';
 
 
 interface RoomProps {
@@ -55,6 +56,7 @@ const Room: React.FC<RoomProps> = ({ username, connectedPeers }) => {
     if (joined && roomClient) {
         return (
             <div>
+                <UrlCopy />
                 <RoomStatus roomId={roomId!} connectedPeers={connectedPeers} />
                 <CoinFlip />
             </div>
