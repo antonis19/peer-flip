@@ -17,7 +17,7 @@ export default class RoomClient {
     private peerConnections: Map<string, RTCPeerConnection>;
     private dataChannels: Map<string, RTCDataChannel>;
     private onPeersUpdatedCallback!: (peers: string[]) => void;
-    private coinFlipSession: CoinFlipSession;
+    public coinFlipSession: CoinFlipSession;
 
 
 

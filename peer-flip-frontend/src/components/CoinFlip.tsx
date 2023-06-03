@@ -1,16 +1,18 @@
+// CoinFlip.tsx
 import React, { useContext, useEffect, useState } from "react";
 import RoomClient from '../Client';
 import { CoinFlipStage, CoinFlipState } from "../CoinFlipSession";
 import RoomClientContext from '../contexts/RoomClientContext';
-import { Box, TextField, Button } from '@mui/material';
+import Coin from './Coin';
+import { Button } from '@mui/material';
 import styles from '../styles/CoinFlip.module.css';
-
 
 const CoinFlip: React.FC = () => {
     const roomClient = useContext(RoomClientContext) as RoomClient;
+    const [statusMessage, setStatusMessage] = useState("");
+    const [flipOutcome, setFlipOutcome] = useState<'HEADS' | 'TAILS' | undefined>(undefined);
+    const [isFlipping, setIsFlipping] = useState(false);
 
-
-    let [statusMessage, setStatusMessage] = useState("");
     const getStatusMessageFromState = (state: CoinFlipState) => {
         const stage = state.stage;
         switch (stage) {
@@ -23,9 +25,9 @@ const CoinFlip: React.FC = () => {
             case CoinFlipStage.REVEAL_SENT:
                 return "Revealing values...";
             case CoinFlipStage.FINISHED:
-                return `Flip result: ${JSON.stringify(state.flipOutcome)}`;
+                return `Flip result: ${flipOutcome}`;
             case CoinFlipStage.ABORTED:
-                return `Coin flip aborted due to an error: ${JSON.stringify(state.flipOutcome)}`;
+                return `Coin flip aborted due to an error: ${state.flipOutcome!.error}`;
             default:
                 return "Unknown state.";
         }
@@ -33,14 +35,20 @@ const CoinFlip: React.FC = () => {
 
     useEffect(() => {
         if (roomClient) {
-            console.log("REACT : CALLING USE EFFECT");
             roomClient.setOnCoinFlipStateChanged((state: CoinFlipState) => {
+                const { flipOutcome } = state;
+                setIsFlipping(roomClient.coinFlipSession.flipInProgress());
+                const result = flipOutcome?.result;
+                console.log(">>>>>>> STAGE = " + state.stage);
+                console.log(">>>>>>> RESULT = ", flipOutcome?.result);
+                setFlipOutcome(flipOutcome?.result);
                 setStatusMessage(getStatusMessageFromState(state));
             });
         }
     }, [roomClient]);
 
     const handleClick = () => {
+        setIsFlipping(true);
         roomClient.flip();
     };
 
@@ -48,6 +56,7 @@ const CoinFlip: React.FC = () => {
         <div>
             <Button variant="contained" className={styles.button} onClick={handleClick}>FLIP COIN</Button>
             <div>{statusMessage}</div>
+            <Coin isFlipping={isFlipping} flipOutcome={flipOutcome} />
         </div>
     );
 };

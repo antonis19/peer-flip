@@ -2,7 +2,7 @@ import { generateCommitment, generateRandomNonce, generateRandomValue } from './
 
 interface FlipResult {
     error: string | undefined;
-    result: string | undefined;
+    result: 'HEADS' | 'TAILS' | undefined;
 }
 
 export enum CoinFlipStage {

@@ -1,25 +1,8 @@
-/* styles.css */
-@keyframes flip {
-    0% {
-        transform: rotateY(0deg);
-    }
-
-    50% {
-        transform: rotateY(180deg);
-    }
-
-    100% {
-        transform: rotateY(360deg);
-    }
-}
-
+/* Coin.module.css */
 .coin {
     width: 100px;
     height: 100px;
-    background-color: #ffcc00;
-    border-radius: 50%;
-    position: relative;
-    animation: flip 1s linear;
+    perspective: 1000px;
 }
 
 .face {
@@ -27,19 +10,49 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2em;
     backface-visibility: hidden;
+    background-size: cover;
+    background-position: center;
 }
 
-.head {
-    background-color: #ffcc00;
+.heads {
+    background-image: url('../assets/heads.png');
     transform: rotateY(0deg);
 }
 
-.tail {
-    background-color: #ff6600;
+.tails {
+    background-image: url('../assets/tails.png');
     transform: rotateY(180deg);
+}
+
+@keyframes flipHeads {
+    from {
+        transform: rotateY(0deg);
+    }
+
+    to {
+        transform: rotateY(360deg);
+    }
+}
+
+@keyframes flipTails {
+    from {
+        transform: rotateY(180deg);
+    }
+
+    to {
+        transform: rotateY(540deg);
+    }
+}
+
+.flippingHeads {
+    animation: flipHeads 1s infinite;
+}
+
+.flippingTails {
+    animation: flipTails 1s infinite;
+}
+
+.visible {
+    opacity: 1;
 }
