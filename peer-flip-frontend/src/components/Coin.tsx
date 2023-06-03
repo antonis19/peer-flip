@@ -1,5 +1,4 @@
-// Coin.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import styles from '../styles/Coin.module.css';
 
 type CoinProps = {
@@ -15,18 +14,28 @@ const Coin: React.FC<CoinProps> = ({ isFlipping, flipOutcome }) => {
     if (isFlipping) {
         headsClasses.push(styles.flippingHeads);
         tailsClasses.push(styles.flippingTails);
-    } else if (flipOutcome) {
-        if (flipOutcome === 'HEADS') {
-            headsClasses.push(styles.visible);
-        } else if (flipOutcome === 'TAILS') {
-            tailsClasses.push(styles.visible);
-        }
+    } else if (flipOutcome === 'HEADS') {
+        headsClasses.push(styles.landHeads);
+    } else if (flipOutcome === 'TAILS') {
+        tailsClasses.push(styles.landTails);
+    }
+
+    function isHeads() {
+        return flipOutcome != undefined && flipOutcome == 'HEADS';
+    }
+
+    function isTails() {
+        return flipOutcome != undefined && flipOutcome == 'TAILS';
+    }
+
+    function isUndefined() {
+        return flipOutcome == undefined;
     }
 
     return (
         <div className={coinClasses.join(' ')}>
-            <div className={headsClasses.join(' ')}></div>
-            <div className={tailsClasses.join(' ')}></div>
+            {(isFlipping || isHeads() || isUndefined()) && <div className={headsClasses.join(' ')}></div>}
+            {(isFlipping || isTails()) && <div className={tailsClasses.join(' ')}></div>}
         </div>
     );
 };

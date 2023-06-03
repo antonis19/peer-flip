@@ -17,7 +17,6 @@
 
 .heads {
     background-image: url('../assets/heads.png');
-    transform: rotateY(0deg);
 }
 
 .tails {
@@ -53,6 +52,10 @@
     animation: flipTails 1s infinite;
 }
 
-.visible {
-    opacity: 1;
+.landHeads {
+    transform: rotateY(0deg);
+}
+
+.landTails {
+    transform: rotateY(0deg);
 }

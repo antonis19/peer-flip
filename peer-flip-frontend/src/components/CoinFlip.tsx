@@ -25,7 +25,7 @@ const CoinFlip: React.FC = () => {
             case CoinFlipStage.REVEAL_SENT:
                 return "Revealing values...";
             case CoinFlipStage.FINISHED:
-                return `Flip result: ${flipOutcome}`;
+                return `Flip result: ${state.flipOutcome!.result}`;
             case CoinFlipStage.ABORTED:
                 return `Coin flip aborted due to an error: ${state.flipOutcome!.error}`;
             default:
@@ -38,7 +38,6 @@ const CoinFlip: React.FC = () => {
             roomClient.setOnCoinFlipStateChanged((state: CoinFlipState) => {
                 const { flipOutcome } = state;
                 setIsFlipping(roomClient.coinFlipSession.flipInProgress());
-                const result = flipOutcome?.result;
                 console.log(">>>>>>> STAGE = " + state.stage);
                 console.log(">>>>>>> RESULT = ", flipOutcome?.result);
                 setFlipOutcome(flipOutcome?.result);
@@ -55,7 +54,7 @@ const CoinFlip: React.FC = () => {
     return (
         <div>
             <Button variant="contained" className={styles.button} onClick={handleClick}>FLIP COIN</Button>
-            <div>{statusMessage}</div>
+            <h3>{statusMessage}</h3>
             <Coin isFlipping={isFlipping} flipOutcome={flipOutcome} />
         </div>
     );
