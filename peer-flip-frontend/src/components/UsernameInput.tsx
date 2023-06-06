@@ -35,12 +35,13 @@ export const UsernameInput: React.FC<UsernameInputProps> = ({ setUsername }) => 
                 onChange={(e) => setInputValue(e.target.value)}
             />
             <Button sx={{
-                backgroundColor: '#3f51b5',
+                backgroundColor: '#00612d',
                 color: '#fff',
                 '&:hover': {
-                    backgroundColor: '#303f9f',
+                    backgroundColor: '#00612d',
                 },
                 margin: "8px",
+                borderRadius: "50px",
             }} onClick={() => handleClick(inputValue)}>Set Username</Button>
         </div >
     );

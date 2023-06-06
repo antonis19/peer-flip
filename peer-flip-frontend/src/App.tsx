@@ -90,8 +90,10 @@ function App() {
                 <Box sx={{
                   ...commonStyles,
                   flexGrow: 1,
+                  alignItems: 'center',
                 }}>
                   {!username && <UsernameInput setUsername={setUsername} />}
+                  {username && <h2>Your username: <span style={{ color: '#00612d' }}>{username}</span></h2>}
                   <Router>
                     <Routes>
                       {username && <Route path="/:roomId" element={<Room username={username} connectedPeers={connectedPeers} />} />}

@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import RoomClientContext from '../contexts/RoomClientContext';
 import { useNavigate } from 'react-router-dom';
 import { ErrorContext } from '../contexts/ErrorContext';
-import { Button } from '@mui/material';
+import { Button, Box } from '@mui/material';
 
 
 interface HomeProps {
@@ -39,18 +39,21 @@ export const Home: React.FC<HomeProps> = ({ username }) => {
     };
 
     return (
-        <div>
+        <Box display="flex" justifyContent="center">
             <Button sx={{
-                backgroundColor: '#6f51b5',
+                backgroundColor: '#00612d',
                 color: '#fff',
                 '&:hover': {
-                    backgroundColor: '#6f50a5',
+                    backgroundColor: '#008332',
                 },
                 margin: "20px",
+                fontWeight: 'bold',
+                width: '140px',  // increase width
+                height: '55px',  // increase height
+                borderRadius: "50px",
             }} onClick={handleCreateRoom}>
-                Create Link
+                Create Room
             </Button>
-            {roomId && <h4>{username} joined Room {roomId}</h4>}
-        </div>
+        </Box>
     )
 };
