@@ -26,7 +26,7 @@ function App() {
 
   useEffect(() => {
     if (username) {
-      console.log("CREATING NEW CLIENT");
+      console.log(`CREATING NEW CLIENT for ${username}`);
       const newClient = new RoomClient('ws://localhost:9090', {
         onError: (message: string) => {
           console.log(`Error: ${message}`);
@@ -47,7 +47,7 @@ function App() {
       });
       setClient(newClient);
     }
-  }, [username, errorMessage]);
+  }, [username]);
 
   const commonStyles = {
     bgcolor: 'white',

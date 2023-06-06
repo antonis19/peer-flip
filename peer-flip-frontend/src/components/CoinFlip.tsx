@@ -7,6 +7,8 @@ import Coin from './Coin';
 import { Button } from '@mui/material';
 import styles from '../styles/CoinFlip.module.css';
 import { RoomContext } from "../contexts/RoomContext";
+import Box from '@mui/system/Box';
+import { ErrorContext } from "../contexts/ErrorContext";
 
 const CoinFlip: React.FC = () => {
     const roomClient = useContext(RoomClientContext) as RoomClient;
@@ -15,12 +17,18 @@ const CoinFlip: React.FC = () => {
     const [isFlipping, setIsFlipping] = useState(false);
 
     const roomContext = useContext(RoomContext);
+    const errorContext = useContext(ErrorContext);
 
     if (!roomContext) {
-        throw new Error('RoomContext is undefined');
+        throw new Error('RoomContext is undefined.');
+    }
+
+    if (!errorContext) {
+        throw new Error('ErrorContext is undefined.')
     }
 
     const { joined } = roomContext;
+    const { setErrorMessage } = errorContext;
 
     const getStatusMessageFromState = (state: CoinFlipState) => {
         const stage = state.stage;
@@ -36,7 +44,8 @@ const CoinFlip: React.FC = () => {
             case CoinFlipStage.FINISHED:
                 return `Flip result: ${state.flipOutcome!.result}`;
             case CoinFlipStage.ABORTED:
-                return `Coin flip aborted due to an error: ${state.flipOutcome!.error}`;
+                setErrorMessage(`Coin flip aborted due to an error: ${state.flipOutcome!.error}`);
+                return "";
             default:
                 return "Unknown state.";
         }
@@ -56,17 +65,36 @@ const CoinFlip: React.FC = () => {
     }, [roomClient]);
 
     const handleClick = () => {
+        setErrorMessage('');
         setIsFlipping(true);
         roomClient.flip();
     };
 
     return (
-        <div>
-            <h3>{statusMessage}</h3>
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',  // Add space between items
+            }}
+        >
             <Coin isFlipping={isFlipping} flipOutcome={flipOutcome} />
-            {joined && <Button variant="contained" className={styles.button} onClick={handleClick}>FLIP COIN</Button>}
-        </div>
+            <h3>{statusMessage}</h3>
+            {joined &&
+                <Button
+                    sx={{ borderRadius: '50px', width: '100px', height: '40px' }}
+                    variant="contained"
+                    className={styles.button}
+                    onClick={handleClick}
+                >
+                    FLIP
+                </Button>
+            }
+        </Box>
     );
+
 };
 
 export default CoinFlip;
