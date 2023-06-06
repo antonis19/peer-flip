@@ -84,7 +84,7 @@ const CoinFlip: React.FC = () => {
             <h3>{statusMessage}</h3>
             {joined &&
                 <Button
-                    sx={{ borderRadius: '50px', width: '100px', height: '40px' }}
+                    sx={{ borderRadius: '50px', width: '100px', height: '40px', fontWeight: 'bold' }}
                     variant="contained"
                     className={styles.button}
                     onClick={handleClick}

@@ -1,9 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
-import CoinFlip from './CoinFlip';
 import RoomClientContext from '../contexts/RoomClientContext';
 import { ErrorContext } from '../contexts/ErrorContext';
-import { LoadingButton } from '@mui/lab';
 import { RoomStatus } from './RoomStatus';
 import UrlCopy from './UrlCopy';
 import { RoomContext } from '../contexts/RoomContext';
@@ -56,8 +54,7 @@ const Room: React.FC<RoomProps> = ({ username, connectedPeers }) => {
     if (joined && roomClient) {
         return (
             <div>
-                <UrlCopy />
-                <RoomStatus roomId={roomId!} connectedPeers={connectedPeers} />
+                <RoomStatus roomId={roomId!} username={username} connectedPeers={connectedPeers} />
             </div>
         );
     }
