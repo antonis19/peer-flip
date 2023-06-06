@@ -6,6 +6,7 @@ import { ErrorContext } from '../contexts/ErrorContext';
 import { LoadingButton } from '@mui/lab';
 import { RoomStatus } from './RoomStatus';
 import UrlCopy from './UrlCopy';
+import { RoomContext } from '../contexts/RoomContext';
 
 
 interface RoomProps {
@@ -17,13 +18,20 @@ const Room: React.FC<RoomProps> = ({ username, connectedPeers }) => {
     const { roomId } = useParams();
     const roomClient = useContext(RoomClientContext);
     const { errorMessage, setErrorMessage } = useContext(ErrorContext);
-    const [joining, setJoining] = useState<boolean>(false);
-    const [joined, setJoined] = useState<boolean>(false);
+    const roomContext = useContext(RoomContext);
+
+    if (!roomContext) {
+        throw new Error('RoomContext is undefined');
+    }
+    const { joining, setJoining, joined, setJoined } = roomContext;
 
     useEffect(() => {
+        if (!username) {
+            return;
+        }
         console.log(`INSIDE Room.useEffect() joined `)
         if (!joined && !joining && roomClient && roomId) {
-            console.log("Not Joined, Trying to join...");
+            console.log("Not Joined, Trying to join with username " + username);
             setJoining(true);
         } else if (joining && roomId && roomClient) {
             roomClient.joinRoom(roomId);
@@ -42,23 +50,14 @@ const Room: React.FC<RoomProps> = ({ username, connectedPeers }) => {
             roomClient.callbacks.onRoomJoined = handleRoomJoined;
         }
 
-    }, [roomId, joined, joining, roomClient]);
+    }, [username, roomId, joined, joining, roomClient]);
 
 
-    if (joining) {
-        return <LoadingButton
-            loading={joining}
-            variant="outlined"
-        >
-            {"Joining room"}
-        </LoadingButton>
-    }
     if (joined && roomClient) {
         return (
             <div>
                 <UrlCopy />
                 <RoomStatus roomId={roomId!} connectedPeers={connectedPeers} />
-                <CoinFlip />
             </div>
         );
     }

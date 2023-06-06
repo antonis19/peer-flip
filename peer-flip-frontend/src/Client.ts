@@ -18,6 +18,8 @@ export default class RoomClient {
     private dataChannels: Map<string, RTCDataChannel>;
     private onPeersUpdatedCallback!: (peers: string[]) => void;
     public coinFlipSession: CoinFlipSession;
+    private peerConnectionListeners: Map<RTCPeerConnection, any>;
+    private dataChannelListeners: Map<RTCDataChannel, any>;
 
 
 
@@ -28,9 +30,18 @@ export default class RoomClient {
         this.roomId = "";
         this.callbacks = callbacks;
         this.peerConnections = new Map();
+        this.peerConnectionListeners = new Map();
         this.dataChannels = new Map();
+        this.dataChannelListeners = new Map();
         this.addListeners();
         this.coinFlipSession = new CoinFlipSession();
+    }
+
+    public teardown() {
+        this.socket.removeEventListener('message', this.socketListener);
+        this.socket.close();
+        this.teardownPeerConnections();
+        this.teardownDataChannels();
     }
 
     public setOnPeersUpdatedCallback(callback: (peers: string[]) => void) {
@@ -56,13 +67,13 @@ export default class RoomClient {
             iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
         });
 
-
-        peerConnection.addEventListener('negotiationneeded', async () => {
+        // Define the listener functions
+        const negotiationNeededListener = async () => {
             console.log("TRIGGERED onnegotiationneeded");
             await this.initiateOffer(targetUserId);
-        });
+        };
 
-        peerConnection.addEventListener('icecandidate', async (event) => {
+        const iceCandidateListener = async (event: RTCPeerConnectionIceEvent) => {
             console.log("TRIGGERED onicecandidate");
             if (event.candidate) {
                 const candidate = event.candidate.toJSON();
@@ -70,49 +81,127 @@ export default class RoomClient {
                 console.log(candidate);
                 await this.sendSignalingMessage(targetUserId, { type: 'newIceCandidate', candidate: event.candidate.toJSON() });
             }
-        });
+        };
 
-        peerConnection.addEventListener('icegatheringstatechange', async () => {
+        const iceGatheringStateChangeListener = async () => {
             console.log("TRIGGERED onicegatheringstatechange");
             console.log(`ICE gathering state changed: ${peerConnection.iceGatheringState}`);
-        });
+        };
 
-        peerConnection.addEventListener('connectionstatechange', () => {
+        const connectionStateChangeListener = () => {
             console.log("TRIGGERED onconnectionstatechange");
             console.log("Connection established to " + targetUserId);
+        };
+
+        // Now add the event listeners using the defined functions
+        peerConnection.addEventListener('negotiationneeded', negotiationNeededListener);
+        peerConnection.addEventListener('icecandidate', iceCandidateListener);
+        peerConnection.addEventListener('icegatheringstatechange', iceGatheringStateChangeListener);
+        peerConnection.addEventListener('connectionstatechange', connectionStateChangeListener);
+
+        // Save the event listeners somewhere accessible for later removal
+        this.peerConnectionListeners.set(peerConnection, {
+            negotiationNeededListener,
+            iceCandidateListener,
+            iceGatheringStateChangeListener,
+            connectionStateChangeListener
         });
 
         // If the current user's ID is lower than the target user's ID, create the data channel
         if (this.userId < targetUserId) {
             console.log(">Initiating data channel");
             const dataChannel = peerConnection.createDataChannel('dataChannel');
-            dataChannel.addEventListener('open', () => {
+
+            const openListener = () => {
                 console.log('Data channel open');
-            });
-            dataChannel.addEventListener('message', (event) => {
+            };
+            const messageListener = (event: any) => {
                 console.log(`Received message from peer ${targetUserId}:`, event.data);
                 const parsedData = JSON.parse(event.data);
                 this.handleDataChannelMessage(targetUserId, parsedData);
+            };
+
+            dataChannel.addEventListener('open', openListener);
+            dataChannel.addEventListener('message', messageListener);
+
+            this.dataChannelListeners.set(dataChannel, {
+                openListener,
+                messageListener
             });
+
             this.dataChannels.set(targetUserId, dataChannel);
         } else {
             console.log(">Waiting for datachannel");
             // If the current user's ID is greater, wait for the ondatachannel event
             peerConnection.ondatachannel = (event) => {
                 const dataChannel = event.channel;
-                dataChannel.addEventListener('open', () => {
+
+                const openListener = () => {
                     console.log('Data channel open');
-                });
-                dataChannel.addEventListener('message', (event) => {
+                };
+                const messageListener = (event: any) => {
                     console.log(`Received message from peer ${targetUserId}:`, event.data);
                     const parsedData = JSON.parse(event.data);
                     this.handleDataChannelMessage(targetUserId, parsedData);
+                };
+
+                dataChannel.addEventListener('open', openListener);
+                dataChannel.addEventListener('message', messageListener);
+
+                this.dataChannelListeners.set(dataChannel, {
+                    openListener,
+                    messageListener
                 });
+
                 this.dataChannels.set(targetUserId, dataChannel);
             };
         }
         return peerConnection;
     }
+
+    private teardownPeerConnections() {
+        for (let [userId, peerConnection] of this.peerConnections) {
+            this.removePeerConnectionListeners(peerConnection);
+            this.peerConnections.delete(userId);
+        }
+    }
+
+    private removePeerConnectionListeners(peerConnection: RTCPeerConnection): void {
+        const listeners = this.peerConnectionListeners.get(peerConnection);
+        if (!listeners) {
+            return;
+        }
+
+        peerConnection.removeEventListener('negotiationneeded', listeners.negotiationNeededListener);
+        peerConnection.removeEventListener('icecandidate', listeners.iceCandidateListener);
+        peerConnection.removeEventListener('icegatheringstatechange', listeners.iceGatheringStateChangeListener);
+        peerConnection.removeEventListener('connectionstatechange', listeners.connectionStateChangeListener);
+
+        this.peerConnectionListeners.delete(peerConnection);
+    }
+
+    private teardownDataChannels() {
+        for (const dataChannel of this.dataChannelListeners.keys()) {
+            this.removeDataChannelListeners(dataChannel);
+            this.dataChannelListeners.delete(dataChannel);
+        }
+    }
+
+    private removeDataChannelListeners(dataChannel: RTCDataChannel): void {
+        const listeners = this.dataChannelListeners.get(dataChannel);
+        if (!listeners) {
+            return;
+        }
+
+        dataChannel.removeEventListener('open', listeners.openListener);
+        dataChannel.removeEventListener('message', listeners.messageListener);
+
+        this.dataChannelListeners.delete(dataChannel);
+    }
+
+
+
+
 
     private async initiateOffer(targetUserId: string): Promise<void> {
         const peerConnection = this.peerConnections.get(targetUserId);
@@ -169,40 +258,42 @@ export default class RoomClient {
         }
     }
 
-    private addListeners(): void {
-        this.socket.addEventListener('message', async (event) => {
-            const data = JSON.parse(event.data);
+    private socketListener = async (event: any) => {
+        const data = JSON.parse(event.data);
+        console.log(data);
+
+        // Call handleSignalingMessage for signaling messages
+        if (['offer', 'answer', 'newIceCandidate'].includes(data.type)) {
+            await this.handleSignalingMessage(data);
+        }
+
+
+        if (data.type === 'roomCreated' && this.callbacks.onRoomCreated) {
+            this.callbacks.onRoomCreated(data.roomId);
+        }
+
+        if (data.type === 'roomJoined' && this.callbacks.onRoomJoined) {
+            console.log("data = ");
             console.log(data);
-
-            // Call handleSignalingMessage for signaling messages
-            if (['offer', 'answer', 'newIceCandidate'].includes(data.type)) {
-                await this.handleSignalingMessage(data);
-            }
-
-
-            if (data.type === 'roomCreated' && this.callbacks.onRoomCreated) {
-                this.callbacks.onRoomCreated(data.roomId);
-            }
-
-            if (data.type === 'roomJoined' && this.callbacks.onRoomJoined) {
-                console.log("data = ");
-                console.log(data);
-                this.roomId = data.roomId;
-                console.log("CLIENT got new users");
-                const newUsers = data.users.filter((item: string) => !this.getPeerNames().includes(item));
-                this.initiateWebRTCConnection(newUsers);
-                for (let newUser of newUsers) {
-                    this.callbacks.onRoomJoined(data.roomId, newUser);
-                    if (!this.coinFlipSession.flipInProgress() && newUser !== this.userId) {
-                        this.coinFlipSession.addUser(newUser);
-                    }
+            this.roomId = data.roomId;
+            console.log(`CLIENT for ${this.userId} got new users`);
+            const newUsers = data.users.filter((item: string) => !this.getPeerNames().includes(item));
+            this.initiateWebRTCConnection(newUsers);
+            for (let newUser of newUsers) {
+                this.callbacks.onRoomJoined(data.roomId, newUser);
+                if (!this.coinFlipSession.flipInProgress() && newUser !== this.userId) {
+                    this.coinFlipSession.addUser(newUser);
                 }
             }
+        }
 
-            if (data.type === 'error' && this.callbacks.onError) {
-                this.callbacks.onError(data.message);
-            }
-        });
+        if (data.type === 'error' && this.callbacks.onError) {
+            this.callbacks.onError(data.message);
+        }
+    };
+
+    private addListeners(): void {
+        this.socket.addEventListener('message', this.socketListener);
     }
 
 

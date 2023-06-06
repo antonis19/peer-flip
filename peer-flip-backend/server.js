@@ -25,7 +25,6 @@ server.on('connection', function (socket) {
             var roomIdx = rooms.findIndex(function (room) { return room.roomId === data.roomId; });
             if (roomIdx != -1) {
                 var room = rooms[roomIdx];
-                room.clients.push(socket);
                 if (room.users.includes(data.userId)) {
                     socket.send(JSON.stringify({ type: 'error', message: "User with id ".concat(data.userId, " already exists in the room.") }));
                     return;
@@ -33,6 +32,7 @@ server.on('connection', function (socket) {
                 else {
                     console.log("User not found in room");
                 }
+                room.clients.push(socket);
                 room.users.push(data.userId);
                 for (var _i = 0, _a = rooms[roomIdx].clients; _i < _a.length; _i++) {
                     var clientSocket = _a[_i];

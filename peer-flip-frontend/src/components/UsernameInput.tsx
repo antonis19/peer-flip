@@ -1,5 +1,6 @@
 import { TextField, Button } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { ErrorContext } from '../contexts/ErrorContext';
 
 interface UsernameInputProps {
     setUsername: (username: string) => void;
@@ -7,8 +8,14 @@ interface UsernameInputProps {
 
 export const UsernameInput: React.FC<UsernameInputProps> = ({ setUsername }) => {
     const [inputValue, setInputValue] = useState('');
+    const { errorMessage, setErrorMessage } = useContext(ErrorContext);
 
-
+    function handleClick(inputValue: string) {
+        if (errorMessage) {
+            setErrorMessage('');
+        }
+        setUsername(inputValue);
+    }
 
     return (
         <div>
@@ -34,7 +41,7 @@ export const UsernameInput: React.FC<UsernameInputProps> = ({ setUsername }) => 
                     backgroundColor: '#303f9f',
                 },
                 margin: "8px",
-            }} onClick={() => setUsername(inputValue)}>Set Username</Button>
+            }} onClick={() => handleClick(inputValue)}>Set Username</Button>
         </div >
     );
 };

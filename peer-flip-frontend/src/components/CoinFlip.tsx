@@ -6,12 +6,21 @@ import RoomClientContext from '../contexts/RoomClientContext';
 import Coin from './Coin';
 import { Button } from '@mui/material';
 import styles from '../styles/CoinFlip.module.css';
+import { RoomContext } from "../contexts/RoomContext";
 
 const CoinFlip: React.FC = () => {
     const roomClient = useContext(RoomClientContext) as RoomClient;
     const [statusMessage, setStatusMessage] = useState("");
     const [flipOutcome, setFlipOutcome] = useState<'HEADS' | 'TAILS' | undefined>(undefined);
     const [isFlipping, setIsFlipping] = useState(false);
+
+    const roomContext = useContext(RoomContext);
+
+    if (!roomContext) {
+        throw new Error('RoomContext is undefined');
+    }
+
+    const { joined } = roomContext;
 
     const getStatusMessageFromState = (state: CoinFlipState) => {
         const stage = state.stage;
@@ -53,9 +62,9 @@ const CoinFlip: React.FC = () => {
 
     return (
         <div>
-            <Button variant="contained" className={styles.button} onClick={handleClick}>FLIP COIN</Button>
             <h3>{statusMessage}</h3>
             <Coin isFlipping={isFlipping} flipOutcome={flipOutcome} />
+            {joined && <Button variant="contained" className={styles.button} onClick={handleClick}>FLIP COIN</Button>}
         </div>
     );
 };

@@ -35,13 +35,13 @@ server.on('connection', (socket: WebSocket) => {
             const roomIdx = rooms.findIndex((room) => room.roomId === data.roomId);
             if (roomIdx != -1) {
                 const room = rooms[roomIdx];
-                room.clients.push(socket);
                 if (room.users.includes(data.userId)) {
                     socket.send(JSON.stringify({ type: 'error', message: `User with id ${data.userId} already exists in the room.` }));
                     return;
                 } else {
                     console.log("User not found in room");
                 }
+                room.clients.push(socket);
                 room.users.push(data.userId);
                 for (let clientSocket of rooms[roomIdx].clients) {
                     clientSocket.send(JSON.stringify({ type: 'roomJoined', roomId: data.roomId, users: room.users }));
