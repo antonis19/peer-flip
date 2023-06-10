@@ -23,7 +23,7 @@ export const UsernameInput: React.FC<UsernameInputProps> = ({ setUsername }) => 
                 id="username-input"
                 label="Username"
                 sx={{
-                    width: '200px',
+                    width: '60%',
                 }}
                 InputProps={{
                     sx: {
@@ -40,7 +40,7 @@ export const UsernameInput: React.FC<UsernameInputProps> = ({ setUsername }) => 
                 '&:hover': {
                     backgroundColor: '#00612d',
                 },
-                margin: "8px",
+                margin: "10px",
                 borderRadius: "50px",
             }} onClick={() => handleClick(inputValue)}>Set Username</Button>
         </div >

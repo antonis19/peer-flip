@@ -13,6 +13,7 @@ import ErrorAlert from './components/ErrorAlert';
 import CoinFlip from './components/CoinFlip';
 import { RoomContext } from './contexts/RoomContext';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useMediaQuery } from '@mui/material';
 
 
 function App() {
@@ -25,8 +26,9 @@ function App() {
   const [joining, setJoining] = useState<boolean>(false);
   const [joined, setJoined] = useState<boolean>(false);
 
-
   const SERVER_URL = 'wss://shade-knowledgeable-elderberry.glitch.me/';
+
+  const isMobile = useMediaQuery('(max-width: 600px)');
 
   const theme = createTheme({
     typography: {
@@ -65,7 +67,6 @@ function App() {
   const commonStyles = {
     bgcolor: 'white',
     borderRadius: '1rem',
-    padding: '2rem',
   };
 
   return (
@@ -73,36 +74,64 @@ function App() {
       <RoomClientContext.Provider value={client}>
         <RoomContext.Provider value={{ joining, setJoining, joined, setJoined }}>
           <ErrorContext.Provider value={{ errorMessage, setErrorMessage }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh', bgcolor: '#7FFFD4' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: '#7FFFD4' }}>
               <Typography variant="h3" align="center" gutterBottom>
                 P2P Coin Flip
               </Typography>
               <ErrorAlert message={errorMessage} />
-              <Box sx={{ display: 'flex', width: '80%', height: '73vh', marginTop: '2rem', gap: '1rem' }}>
+              <Box sx={{
+                display: 'flex', width: '90vw', height: '80%',
+                gap: '1rem',
+                flexDirection: isMobile ? 'column' : 'row'
+              }}>
                 <Box sx={{
                   ...commonStyles,
-                  height: '70vh',
-                  overflow: 'auto',
-                  flexGrow: 2,
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
+                  padding: '2rem',
+                  flex: isMobile ? 'initial' : 1,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}>
                   <CoinFlip />
                 </Box>
                 <Box sx={{
                   ...commonStyles,
-                  flexGrow: 1,
-                  alignItems: 'center',
+                  paddingTop: "0px",
+                  paddingLeft: "10px",
+                  paddingRight: "10px",
+                  flex: isMobile ? 'initial' : 1,
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}>
-                  {!username && <UsernameInput setUsername={setUsername} />}
-                  {username && <h2>Your username: <span style={{ color: '#00612d' }}>{username}</span></h2>}
-                  <Router>
-                    <Routes>
-                      {username && <Route path="/:roomId" element={<Room username={username} connectedPeers={connectedPeers} />} />}
-                      {username && <Route path="/" element={<Home username={username} />} />}
-                    </Routes>
-                  </Router>
+                  {!username && (
+                    <div style={{ marginTop: '2rem' }}>
+                      <UsernameInput setUsername={setUsername} />
+                    </div>
+                  )}
+                  <Box
+                    sx={{
+                      bgcolor: "white",
+                      paddingTop: "0%",
+                      paddingLeft: "1%",
+                      paddingRight: "1%",
+                      justifyContent: "center",
+                      alignItems: "left",
+                      flexDirection: "column", // Add this line to stack the components vertically
+                    }}
+                  >
+                    {username && (
+                      <>
+                        <h2>Your username: <span style={{ color: '#00612d' }}>{username}</span></h2>
+                        <Router>
+                          <Routes>
+                            {username && <Route path="/:roomId" element={<Room username={username} connectedPeers={connectedPeers} />} />}
+                            {username && <Route path="/" element={<Home username={username} />} />}
+                          </Routes>
+                        </Router>
+                      </>
+                    )}
+                  </Box>
+
                 </Box>
               </Box>
             </Box>

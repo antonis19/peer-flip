@@ -1,8 +1,15 @@
 /* Coin.module.css */
-.coin {
-    width: 300px;
-    height: 300px;
+.parent {
     perspective: 1000px;
+    /* Adjust the value as needed */
+}
+
+.coin {
+    width: 30vh;
+    height: 30vh;
+    transform-style: preserve-3d;
+    transform: translateZ(0);
+    /* Ensure proper 3D rendering */
 }
 
 .face {
