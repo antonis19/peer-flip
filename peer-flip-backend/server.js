@@ -3,7 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var WebSocket = require("ws");
 var Server = WebSocket.Server;
 var rooms = [];
-var server = new Server({ port: 9090 });
+var PORT = process.env.PORT || 9090;
+var server = new Server({ port: Number(PORT) });
+console.log("Started server on port " + PORT);
 server.on('connection', function (socket) {
     console.log('Client connected');
     socket.on('message', function (message) {
@@ -15,7 +17,6 @@ server.on('connection', function (socket) {
             rooms.push({ roomId: roomId, clients: [], users: [] });
             socket.send(JSON.stringify({ type: 'roomCreated', roomId: roomId }));
         }
-        // ...
         if (data.type === 'joinRoom') {
             console.log("BEFORE:");
             console.log("Rooms = ");
@@ -72,20 +73,6 @@ function forwardSignalingMessage(roomId, targetUserId, message) {
         console.log(message);
         receiverSocket.send(message);
     }
-}
-function broadcastMessage(roomId, message) {
-    var room = rooms.find(function (room) { return room.roomId === roomId; });
-    if (!room) {
-        return;
-    }
-    var clients = room === null || room === void 0 ? void 0 : room.clients;
-    if (!clients)
-        return;
-    clients.forEach(function (client) {
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(message);
-        }
-    });
 }
 function generateRoomId() {
     return Math.random().toString(36).substr(2, 9);

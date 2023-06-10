@@ -9,7 +9,9 @@ interface Room {
 
 const rooms: Room[] = [];
 
-const server = new Server({ port: 9090 });
+const PORT = process.env.PORT || 9090
+const server = new Server({ port: Number(PORT) });
+console.log("Started server on port " + PORT);
 
 server.on('connection', (socket: WebSocket) => {
     console.log('Client connected');
@@ -25,7 +27,6 @@ server.on('connection', (socket: WebSocket) => {
             socket.send(JSON.stringify({ type: 'roomCreated', roomId }));
         }
 
-        // ...
         if (data.type === 'joinRoom') {
             console.log("BEFORE:");
             console.log("Rooms = ");
@@ -85,21 +86,6 @@ function forwardSignalingMessage(roomId: string, targetUserId: string, message: 
     }
 }
 
-
-function broadcastMessage(roomId: string, message: string): void {
-    const room = rooms.find((room) => room.roomId === roomId);
-    if (!room) {
-        return;
-    }
-    const clients = room?.clients;
-    if (!clients) return;
-
-    clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(message);
-        }
-    });
-}
 
 function generateRoomId(): string {
     return Math.random().toString(36).substr(2, 9);

@@ -25,6 +25,9 @@ function App() {
   const [joining, setJoining] = useState<boolean>(false);
   const [joined, setJoined] = useState<boolean>(false);
 
+
+  const SERVER_URL = 'wss://shade-knowledgeable-elderberry.glitch.me/';
+
   const theme = createTheme({
     typography: {
       fontFamily: 'monospace, monaco',
@@ -35,7 +38,7 @@ function App() {
   useEffect(() => {
     if (username && !clientCreated) {
       console.log(`CREATING NEW CLIENT for ${username}`);
-      const newClient = new RoomClient('ws://localhost:9090', {
+      const newClient = new RoomClient(SERVER_URL, {
         onError: (message: string) => {
           console.log(`Error: ${message}`);
           setErrorMessage(message);
