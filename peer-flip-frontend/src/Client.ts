@@ -125,7 +125,12 @@ export default class RoomClient {
         // If the current user's ID is lower than the target user's ID, create the data channel
         if (this.userId < targetUserId) {
             console.log(">Initiating data channel");
-            const dataChannel = peerConnection.createDataChannel('dataChannel');
+            const dataChannelOptions = {
+                ordered: true,  // Guaranteed message delivery
+                maxRetransmits: 20, // Maximum retransmit attempts before message delivery is considered as failed
+            };
+
+            const dataChannel = peerConnection.createDataChannel('dataChannel', dataChannelOptions);
 
             const openListener = () => {
                 console.log('Data channel open');
