@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "P2P Coin Flip",
+  "name": "PeerFlip: A P2P coin flip protocol",
   "icons": [
     {
       "src": "favicon.ico",
