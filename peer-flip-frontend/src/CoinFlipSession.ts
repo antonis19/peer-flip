@@ -162,6 +162,11 @@ export class CoinFlipSession {
         this.coinFlipState.otherUsers.push(userId);
     }
 
+    public removeUser(userId: string) {
+        this.coinFlipState.otherUsers = this.coinFlipState.otherUsers.filter(user => user !== userId);
+    }
+
+
     public setFlipOutcome(outcome: FlipResult) {
         this.coinFlipState.flipOutcome = outcome;
     }

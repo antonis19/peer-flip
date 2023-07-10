@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import RoomClientContext from '../contexts/RoomClientContext';
 import { ErrorContext } from '../contexts/ErrorContext';
@@ -43,9 +43,14 @@ const Room: React.FC<RoomProps> = ({ username, connectedPeers }) => {
             }
         };
 
+        const handleUserDisconnected = (userId: string) => {
+            roomClient?.onPeersUpdatedCallback(roomClient.getPeerNames());
+        }
+
         if (roomClient) {
             console.log("RoomClient socket ready state = " + roomClient.socket.readyState);
             roomClient.callbacks.onRoomJoined = handleRoomJoined;
+            roomClient.callbacks.onUserDisconnected = handleUserDisconnected;
         }
 
     }, [username, roomId, joined, joining, roomClient]);

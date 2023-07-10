@@ -16,6 +16,27 @@ console.log("Started server on port " + PORT);
 server.on('connection', (socket: WebSocket) => {
     console.log('Client connected');
 
+    socket.on('close', () => {
+        console.log('Client disconnected');
+        // Find the room and user associated with this socket
+        for (let room of rooms) {
+            const userIndex = room.clients.findIndex(client => client === socket);
+            if (userIndex !== -1) {
+                // Remove the user from the room's clients and users arrays
+                room.clients.splice(userIndex, 1);
+                const username = room.users[userIndex];
+                room.users.splice(userIndex, 1);
+                // Notify other users in the room about the disconnection
+                for (let client of room.clients) {
+                    if (client.readyState === WebSocket.OPEN) {
+                        client.send(JSON.stringify({ type: 'userDisconnected', userId: username, users: room.users }));
+                    }
+                }
+                break;
+            }
+        }
+    });
+
     socket.on('message', (message: string) => {
         const data = JSON.parse(message.toString());
         console.log('Received message:', data);

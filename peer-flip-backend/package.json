@@ -1,9 +1,5 @@
 {
   "dependencies": {
-    "@emotion/react": "^11.11.0",
-    "@emotion/styled": "^11.11.0",
-    "@material-ui/lab": "^4.0.0-alpha.61",
-    "@mui/material": "^5.13.2",
     "ws": "^8.13.0"
   },
   "devDependencies": {

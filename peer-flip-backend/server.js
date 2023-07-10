@@ -8,6 +8,28 @@ var server = new Server({ port: Number(PORT) });
 console.log("Started server on port " + PORT);
 server.on('connection', function (socket) {
     console.log('Client connected');
+    socket.on('close', function () {
+        console.log('Client disconnected');
+        // Find the room and user associated with this socket
+        for (var _i = 0, rooms_1 = rooms; _i < rooms_1.length; _i++) {
+            var room = rooms_1[_i];
+            var userIndex = room.clients.findIndex(function (client) { return client === socket; });
+            if (userIndex !== -1) {
+                // Remove the user from the room's clients and users arrays
+                room.clients.splice(userIndex, 1);
+                var username = room.users[userIndex];
+                room.users.splice(userIndex, 1);
+                // Notify other users in the room about the disconnection
+                for (var _a = 0, _b = room.clients; _a < _b.length; _a++) {
+                    var client = _b[_a];
+                    if (client.readyState === WebSocket.OPEN) {
+                        client.send(JSON.stringify({ type: 'userDisconnected', userId: username, users: room.users }));
+                    }
+                }
+                break;
+            }
+        }
+    });
     socket.on('message', function (message) {
         var data = JSON.parse(message.toString());
         console.log('Received message:', data);

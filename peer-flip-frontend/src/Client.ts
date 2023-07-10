@@ -4,6 +4,7 @@ import { generateCommitment } from './utils';
 type RoomClientCallbacks = {
     onRoomCreated?: (roomId: string) => void;
     onRoomJoined?: (roomId: string, userId: string) => void;
+    onUserDisconnected?: (userId: string) => void;
     onError?: (message: string) => void;
     onCoinFlipStateChanged?: (state: CoinFlipState) => void;
 };
@@ -16,7 +17,7 @@ export default class RoomClient {
     private userId: string;
     private peerConnections: Map<string, RTCPeerConnection>;
     private dataChannels: Map<string, RTCDataChannel>;
-    private onPeersUpdatedCallback!: (peers: string[]) => void;
+    public onPeersUpdatedCallback!: (peers: string[]) => void;
     public coinFlipSession: CoinFlipSession;
     private peerConnectionListeners: Map<RTCPeerConnection, any>;
     private dataChannelListeners: Map<RTCDataChannel, any>;
@@ -195,6 +196,30 @@ export default class RoomClient {
         }
     }
 
+
+    private removePeerConnection(disconnectedUser: string) {
+        for (let [userId, peerConnection] of this.peerConnections) {
+            if (userId === disconnectedUser) {
+                this.removePeerConnectionListeners(peerConnection);
+                this.peerConnections.delete(userId);
+            }
+        }
+    }
+
+    private removeDataChannel(disconnectedUser: string) {
+        for (const [userId, dataChannel] of this.dataChannels) {
+            if (userId === disconnectedUser) {
+                this.removeDataChannelListeners(dataChannel);
+                this.dataChannelListeners.delete(dataChannel);
+            }
+        }
+    }
+
+    private removeUser(disconnectedUser: string) {
+        this.removePeerConnection(disconnectedUser);
+        this.removeDataChannel(disconnectedUser);
+    }
+
     private removePeerConnectionListeners(peerConnection: RTCPeerConnection): void {
         const listeners = this.peerConnectionListeners.get(peerConnection);
         if (!listeners) {
@@ -210,9 +235,9 @@ export default class RoomClient {
     }
 
     private teardownDataChannels() {
-        for (const dataChannel of this.dataChannelListeners.keys()) {
+        for (const [userId, dataChannel] of this.dataChannels) {
             this.removeDataChannelListeners(dataChannel);
-            this.dataChannelListeners.delete(dataChannel);
+            this.dataChannels.delete(userId);
         }
     }
 
@@ -314,6 +339,17 @@ export default class RoomClient {
                     this.coinFlipSession.addUser(newUser);
                 }
             }
+        }
+
+        if (data.type === 'userDisconnected' && this.callbacks.onUserDisconnected) {
+            const disconnectedUser = data.userId;
+            console.log(`User ${disconnectedUser} disconnected`);
+            this.removeUser(disconnectedUser);
+            // We can remove the user if the coin flip session is not already started
+            if (!this.coinFlipSession.flipInProgress()) {
+                this.coinFlipSession.removeUser(disconnectedUser);
+            }
+            this.callbacks.onUserDisconnected(disconnectedUser);
         }
 
         if (data.type === 'error' && this.callbacks.onError) {
