@@ -10,7 +10,7 @@ const ErrorAlert: React.FC<ErrorAlertProps> = ({ message }) => {
         return null;
     }
 
-    return <Alert severity="error">{message}</Alert>;
+    return <Alert severity="error" style={{ margin: '5px' }}>{message}</Alert>;
 };
 
 export default ErrorAlert;

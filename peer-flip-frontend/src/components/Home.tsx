@@ -1,11 +1,9 @@
 // Home component
-
 import React, { useContext, useEffect, useState } from 'react';
 import RoomClientContext from '../contexts/RoomClientContext';
 import { useNavigate } from 'react-router-dom';
 import { ErrorContext } from '../contexts/ErrorContext';
-import { Button, Box } from '@mui/material';
-
+import { Button, Box, CircularProgress } from '@mui/material';
 
 interface HomeProps {
     username: string,
@@ -15,12 +13,13 @@ export const Home: React.FC<HomeProps> = ({ username }) => {
     const navigate = useNavigate();
     const roomClient = useContext(RoomClientContext);
     const [roomId, setRoomId] = useState('');
+    const [isCreatingRoom, setIsCreatingRoom] = useState(false);
     const { errorMessage, setErrorMessage } = useContext(ErrorContext);
 
     useEffect(() => {
-
         const handleRoomCreated = (roomId: string) => {
             setRoomId(roomId);
+            setIsCreatingRoom(false);
         };
         if (roomClient) {
             roomClient.callbacks.onRoomCreated = handleRoomCreated;
@@ -31,9 +30,9 @@ export const Home: React.FC<HomeProps> = ({ username }) => {
         }
     }, [roomId, roomClient]);
 
-
     const handleCreateRoom = () => {
         if (roomClient) {
+            setIsCreatingRoom(true);
             roomClient.createRoom();
         }
     };
@@ -48,11 +47,11 @@ export const Home: React.FC<HomeProps> = ({ username }) => {
                 },
                 margin: "20px",
                 fontWeight: 'bold',
-                width: '140px',  // increase width
-                height: '55px',  // increase height
+                width: '140px',
+                height: '55px',
                 borderRadius: "50px",
-            }} onClick={handleCreateRoom}>
-                Create Room
+            }} onClick={handleCreateRoom} disabled={isCreatingRoom}>
+                {isCreatingRoom ? <CircularProgress size={24} color="secondary" /> : "Create Room"}
             </Button>
         </Box>
     )
