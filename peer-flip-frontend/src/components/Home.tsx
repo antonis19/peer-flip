@@ -51,8 +51,8 @@ export const Home: React.FC<HomeProps> = ({ username }) => {
                 height: '55px',
                 borderRadius: "50px",
             }} onClick={handleCreateRoom} disabled={isCreatingRoom}>
-                {isCreatingRoom ? <CircularProgress size={24} color="secondary" /> : "Create Room"}
+                {isCreatingRoom ? <CircularProgress size={24} style={{ color: '#ffffff' }} /> : "Create Room"}
             </Button>
         </Box>
-    )
-};
+    );
+}

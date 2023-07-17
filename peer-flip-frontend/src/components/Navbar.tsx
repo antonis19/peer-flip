@@ -25,7 +25,7 @@ const Navbar = () => {
                     PeerFlip: A P2P Coin Flip Protocol
                 </Typography>
                 <Button color="inherit" href="/how-it-works" style={{ height: '64px', minHeight: '64px' }}>How It Works</Button>
-                <Button color="inherit" href="https://github.com/antonis19/peer-flip" target="_blank" style={{ height: '64px', minHeight: '64px' }}>
+                <Button color="inherit" href="https://github.com/antonis19/peer-flip" target="_blank" style={{ height: '64px', minHeight: '64px', width: '8px' }}>
                     <GitHubIcon />
                 </Button>
             </Toolbar>
