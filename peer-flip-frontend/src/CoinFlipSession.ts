@@ -1,4 +1,4 @@
-import { generateCommitment, generateRandomNonce, generateRandomValue } from './utils';
+import { generateCommitment, generateRandomNonce, generateRandomValue } from './flipUtils';
 
 interface FlipResult {
     error: string | undefined;
@@ -22,7 +22,7 @@ export interface CoinFlipState {
     revealedValues: Map<string, number>;
     revealedNonces: Map<string, number>;
     v: number;
-    nonce: string;
+    nonce: number;
     commitment: string;
     flipOutcome: FlipResult | undefined;
 };
@@ -59,7 +59,7 @@ export class CoinFlipSession {
             revealedValues: new Map<string, number>(),
             revealedNonces: new Map<string, number>(),
             v: -1,
-            nonce: '',
+            nonce: -1,
             commitment: '',
             flipOutcome: undefined
         };
@@ -114,7 +114,7 @@ export class CoinFlipSession {
         return this.coinFlipState.v;
     }
 
-    public getNonce(): string {
+    public getNonce(): number {
         return this.coinFlipState.nonce;
     }
 
@@ -134,7 +134,7 @@ export class CoinFlipSession {
         return this.coinFlipState.receivedCommitments.get(userId)
     }
 
-    public async doesCommitmentMatch(senderId: string, v: number, nonce: string): Promise<boolean> {
+    public async doesCommitmentMatch(senderId: string, v: number, nonce: number): Promise<boolean> {
         const expectedCommitment = await generateCommitment(senderId, v, nonce);
         const receivedCommitment = this.getCommitmentFor(senderId);
         return receivedCommitment === expectedCommitment;

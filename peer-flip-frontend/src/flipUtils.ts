@@ -1,3 +1,5 @@
+const MAX_NUMBER = 1_000_000;
+
 // Utility function to generate a SHA256 hash
 export async function sha256(message: string): Promise<string> {
     const encoder = new TextEncoder();
@@ -7,14 +9,17 @@ export async function sha256(message: string): Promise<string> {
 }
 
 export function generateRandomValue(): number {
-    return Math.floor(Math.random() * 1000000);
+    // generate a  random number between  0 and MAX_NUMBER , and take modulo 2 to make it 0 or 1
+    return Math.floor(Math.random() * MAX_NUMBER) % 2;
 }
 
-export function generateRandomNonce(): string {
-    return Math.random().toString(36).substring(2);
+export function generateRandomNonce(): number {
+    // generate random number between 0 and MAX_NUMBER
+    return Math.floor(Math.random() * MAX_NUMBER)
 }
 
-export async function generateCommitment(userId: string, v: number, nonce: string): Promise<string> {
+// Return  sha256(userId || v || nonce)
+export async function generateCommitment(userId: string, v: number, nonce: number): Promise<string> {
     const input = `${userId}${v}${nonce}`;
     return sha256(input);
 }

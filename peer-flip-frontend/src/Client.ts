@@ -1,5 +1,5 @@
 import { CoinFlipSession, CoinFlipState, CoinFlipStage } from "./CoinFlipSession";
-import { generateCommitment } from './utils';
+import { generateCommitment } from './flipUtils';
 
 type RoomClientCallbacks = {
     onRoomCreated?: (roomId: string) => void;
