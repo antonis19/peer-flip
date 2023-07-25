@@ -9,6 +9,7 @@ import styles from '../styles/CoinFlip.module.css';
 import { RoomContext } from "../contexts/RoomContext";
 import Box from '@mui/system/Box';
 import { ErrorContext } from "../contexts/ErrorContext";
+import { CoinFlipStateContext } from '../contexts/CoinFlipStateContext';
 
 const CoinFlip: React.FC = () => {
     const roomClient = useContext(RoomClientContext) as RoomClient;
@@ -18,6 +19,11 @@ const CoinFlip: React.FC = () => {
 
     const roomContext = useContext(RoomContext);
     const errorContext = useContext(ErrorContext);
+    const coinFlipContext = useContext(CoinFlipStateContext);
+
+    if (!coinFlipContext) {
+        throw new Error("CoinFlipStateContext is undefined.");
+    }
 
     if (!roomContext) {
         throw new Error('RoomContext is undefined.');
@@ -29,6 +35,7 @@ const CoinFlip: React.FC = () => {
 
     const { joined } = roomContext;
     const { setErrorMessage } = errorContext;
+    const { setCoinFlipState } = coinFlipContext;
 
     const getStatusMessageFromState = (state: CoinFlipState) => {
         const stage = state.stage;
@@ -60,9 +67,13 @@ const CoinFlip: React.FC = () => {
                 console.log(">>>>>>> RESULT = ", flipOutcome?.result);
                 setFlipOutcome(flipOutcome?.result);
                 setStatusMessage(getStatusMessageFromState(state));
+                console.log(">>>>>>>>>>>>> CALLING setCoinFlipState(state");
+                // needed because the React's use effect in the CoinFlipStateContext does not listen to in-place modifications of the state object
+                const updatedState = { ...state };
+                setCoinFlipState(updatedState);
             });
         }
-    }, [roomClient]);
+    }, [roomClient,]);
 
     const handleClick = () => {
         setErrorMessage('');
