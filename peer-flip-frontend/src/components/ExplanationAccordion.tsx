@@ -19,7 +19,7 @@ const ExplanationAccordion: React.FC<ExplanationAccordionProps> = ({ currentUser
                     color: 'white',
                     fontWeight: 'bold',
                 }}
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />} // Make the arrow icon white
             >
                 <Typography sx={{ fontWeight: 'bold' }}>Explanation</Typography>
             </AccordionSummary>
