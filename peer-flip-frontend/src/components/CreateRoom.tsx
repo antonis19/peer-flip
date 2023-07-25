@@ -9,7 +9,7 @@ interface HomeProps {
     username: string,
 }
 
-export const Home: React.FC<HomeProps> = ({ username }) => {
+export const CreateRoom: React.FC<HomeProps> = ({ username }) => {
     const navigate = useNavigate();
     const roomClient = useContext(RoomClientContext);
     const [roomId, setRoomId] = useState('');

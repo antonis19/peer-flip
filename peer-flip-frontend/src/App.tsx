@@ -6,7 +6,7 @@ import { Typography, Container, Box } from '@mui/material';
 import { UsernameInput } from './components/UsernameInput';
 import RoomClient from './Client';
 import RoomClientContext from './contexts/RoomClientContext';
-import { Home } from './components/Home';
+import { CreateRoom } from './components/CreateRoom';
 import Room from './components/Room';
 import { ErrorContext } from './contexts/ErrorContext';
 import ErrorAlert from './components/ErrorAlert';
@@ -131,7 +131,7 @@ function App() {
                         <Router>
                           <Routes>
                             {username && <Route path="/:roomId" element={<Room username={username} connectedPeers={connectedPeers} />} />}
-                            {username && <Route path="/" element={<Home username={username} />} />}
+                            {username && <Route path="/" element={<CreateRoom username={username} />} />}
                           </Routes>
                         </Router>
                       </>
