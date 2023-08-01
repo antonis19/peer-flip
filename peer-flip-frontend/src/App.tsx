@@ -144,14 +144,13 @@ function App() {
                 </Box>
                 {
                   client && coinFlipState && [CoinFlipStage.FINISHED, CoinFlipStage.ABORTED].includes(coinFlipState.stage) &&
-                  < Box sx={{
+                  <Box sx={{
                     ...commonStyles,
                     margin: '1rem',
                     padding: '2rem',
-                    flex: isMobile ? 'initial' : 1,
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    width: '100%',  // Takes full width on small screens
+                    maxWidth: isMobile ? '90%' : '70%',  // Doesn't exceed 70% width on larger screens, 100% on small screens
+                    boxSizing: 'border-box', // Include padding and border in element's total width and height
                   }}>
                     <ExplanationAccordion currentUser={username} />
                   </Box>

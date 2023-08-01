@@ -13,6 +13,7 @@ const ExplanationAccordion: React.FC<ExplanationAccordionProps> = ({ currentUser
         <Accordion sx={{
             backgroundColor: 'teal',
             color: 'white',
+            width: '100%', // Set width to 100%
         }}>
             <AccordionSummary
                 sx={{
@@ -24,7 +25,9 @@ const ExplanationAccordion: React.FC<ExplanationAccordionProps> = ({ currentUser
                 <Typography sx={{ fontWeight: 'bold' }}>Explanation</Typography>
             </AccordionSummary>
             <AccordionDetails>
-                <ExplanationTable currentUser={currentUser} />
+                <div style={{ overflowX: 'auto', width: '100%' }}>
+                    <ExplanationTable currentUser={currentUser} />
+                </div>
             </AccordionDetails>
         </Accordion>
     );

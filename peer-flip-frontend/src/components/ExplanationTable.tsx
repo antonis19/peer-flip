@@ -41,7 +41,7 @@ const ExplanationTable: React.FC<ExplanationTableProps> = ({ currentUser }) => {
     const { otherUsers, receivedCommitments, revealedValues, revealedNonces, v, nonce, commitment, commitmentMatch } = coinFlipContext.coinFlipState;
 
     return (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} style={{ maxWidth: '100%', overflowX: 'auto' }}>
             <Table>
                 <TableHead>
                     <TableRow>
@@ -72,9 +72,8 @@ const ExplanationTable: React.FC<ExplanationTableProps> = ({ currentUser }) => {
                         </TableRow>
                     ))}
                 </TableBody>
-
             </Table>
-        </TableContainer>
+        </TableContainer >
     );
 };
 
