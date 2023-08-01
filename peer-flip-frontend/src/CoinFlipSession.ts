@@ -1,4 +1,4 @@
-import { generateCommitment, generateRandomNonce, generateRandomValue } from './flipUtils';
+import { doesCommitmentMatch, generateCommitment, generateRandomNonce, generateRandomValue } from './flipUtils';
 
 interface FlipResult {
     error: string | undefined;
@@ -21,6 +21,7 @@ export interface CoinFlipState {
     receivedCommitments: Map<string, string>;
     revealedValues: Map<string, number>;
     revealedNonces: Map<string, number>;
+    commitmentMatch: Map<string, boolean>;
     v: number;
     nonce: number;
     commitment: string;
@@ -58,6 +59,7 @@ export class CoinFlipSession {
             receivedCommitments: new Map<string, string>(),
             revealedValues: new Map<string, number>(),
             revealedNonces: new Map<string, number>(),
+            commitmentMatch: new Map<string, boolean>(), // map from userId to boolean showing if the commitment foor that user matches the revealed value and nonce
             v: -1,
             nonce: -1,
             commitment: '',
@@ -68,8 +70,6 @@ export class CoinFlipSession {
     public setOnCoinFlipStateChanged(callback: (state: CoinFlipState) => void): void {
         this.onCoinFlipStateChanged = callback;
     }
-
-
 
 
     public setCoinFlipTimeout(timeoutCallback: () => Promise<void>) {
@@ -124,6 +124,8 @@ export class CoinFlipSession {
 
     public async setCommitment(userId: string) {
         this.coinFlipState.commitment = await generateCommitment(userId, this.coinFlipState.v, this.coinFlipState.nonce);
+        const match = await doesCommitmentMatch(this.coinFlipState.commitment, userId, this.getValue(), this.getNonce());
+        this.setCommitmentMatch(userId, match);
     }
 
     public getCommitment(): string {
@@ -136,7 +138,9 @@ export class CoinFlipSession {
 
     public async doesCommitmentMatch(senderId: string, v: number, nonce: number): Promise<boolean> {
         const expectedCommitment = await generateCommitment(senderId, v, nonce);
+        console.log("EXPECTED COMMITMENT = " + expectedCommitment);
         const receivedCommitment = this.getCommitmentFor(senderId);
+        console.log("RECEIVED COMMITMENT = " + receivedCommitment);
         return receivedCommitment === expectedCommitment;
     }
 
@@ -201,6 +205,10 @@ export class CoinFlipSession {
 
     public setCommitmentReceived(userId: string, commitment: string) {
         this.coinFlipState.receivedCommitments.set(userId, commitment);
+    }
+
+    public setCommitmentMatch(userId: string, match: boolean) {
+        this.coinFlipState.commitmentMatch.set(userId, match);
     }
 
     public nCommitmentsReceived(): number {

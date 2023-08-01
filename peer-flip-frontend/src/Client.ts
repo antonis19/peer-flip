@@ -254,9 +254,6 @@ export default class RoomClient {
     }
 
 
-
-
-
     private async initiateOffer(targetUserId: string): Promise<void> {
         const peerConnection = this.peerConnections.get(targetUserId);
         if (!peerConnection) {
@@ -367,10 +364,6 @@ export default class RoomClient {
         const dataChannel = this.dataChannels.get(targetUserId);
         console.log("DATACHANNEL = ", dataChannel);
         if (dataChannel && dataChannel.readyState === 'open') {
-            // if (this.userId !== "Charlie") {
-            //     console.log("SLEEPING....");
-            //     await sleep(2000);
-            // }
             console.log(`Sending ${JSON.stringify(message)} to dataChannel for ${targetUserId}`);
             dataChannel.send(JSON.stringify(message));
         } else {
@@ -393,12 +386,10 @@ export default class RoomClient {
         return new Promise((resolve) => {
             const interval = setInterval(() => {
                 if (cancelCondition()) {
-                    console.log("CANCEL CONDITION REACHED!");
                     clearInterval(interval);
                     resolve(false);
                 }
                 if (condition()) {
-                    console.log("CONDITION REACHED");
                     clearInterval(interval);
                     resolve(true);
                 }
@@ -480,7 +471,6 @@ export default class RoomClient {
                     console.log("Waiting CoinFlipStage.STARTED");
                     const conditionReached = await this.waitForCondition(() => this.coinFlipSession.getCoinFlipStage() === CoinFlipStage.STARTED,
                         () => this.coinFlipSession.flipCompleted());
-                    console.log("CONDITION REACHED = " + conditionReached);
                     if (conditionReached) {
                         await this.broadcastCommitment();
                     } else { // message is now outdated
@@ -514,6 +504,7 @@ export default class RoomClient {
                 }
                 const { v, nonce } = data;
                 const isCommitmentMatching = await this.coinFlipSession.doesCommitmentMatch(senderId, v, nonce);
+                this.coinFlipSession.setCommitmentMatch(senderId, isCommitmentMatching);
                 // verify the commitment matches the (senderId, v, nonce )
                 if (isCommitmentMatching) {
                     this.coinFlipSession.setReveals(senderId, v, nonce);
@@ -543,9 +534,6 @@ export default class RoomClient {
                 console.warn('Unknown data channel message type:', data.type);
         }
     }
-
-
-
 
     private async broadcastErrorAndAbort(error: any) {
         await this.broadcastToDataChannels(this.coinFlipSession.getOtherUsers(), error);
