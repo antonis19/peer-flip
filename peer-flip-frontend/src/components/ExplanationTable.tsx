@@ -57,8 +57,8 @@ const ExplanationTable: React.FC<ExplanationTableProps> = ({ currentUser }) => {
                     <TableRow>
                         <StyledTableCell>{currentUser}</StyledTableCell>
                         <StyledTableCell>{commitment}</StyledTableCell>
-                        <StyledTableCell>{v}</StyledTableCell>
-                        <StyledTableCell>{nonce}</StyledTableCell>
+                        <StyledTableCell>{v > 0 ? v : undefined}</StyledTableCell>
+                        <StyledTableCell>{nonce > 0 ? nonce : undefined}</StyledTableCell>
                         <StyledTableCell>{commitmentMatch.get(currentUser) ? "✅" : "❌"}</StyledTableCell>
                     </TableRow>
                     {/* Display rows for other users */}

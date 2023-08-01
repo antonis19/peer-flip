@@ -138,9 +138,7 @@ export class CoinFlipSession {
 
     public async doesCommitmentMatch(senderId: string, v: number, nonce: number): Promise<boolean> {
         const expectedCommitment = await generateCommitment(senderId, v, nonce);
-        console.log("EXPECTED COMMITMENT = " + expectedCommitment);
         const receivedCommitment = this.getCommitmentFor(senderId);
-        console.log("RECEIVED COMMITMENT = " + receivedCommitment);
         return receivedCommitment === expectedCommitment;
     }
 
