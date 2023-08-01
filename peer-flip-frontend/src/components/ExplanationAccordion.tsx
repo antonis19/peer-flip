@@ -29,6 +29,7 @@ const ExplanationAccordion: React.FC<ExplanationAccordionProps> = ({ currentUser
                     <ExplanationTable currentUser={currentUser} />
                 </div>
             </AccordionDetails>
+            <Typography sx={{ margin: '10px' }}> The result is calculated as the XOR of all random values. If the result is 0 then the outcome is heads, otherwise tails. </Typography>
         </Accordion>
     );
 };

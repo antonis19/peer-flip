@@ -14,7 +14,7 @@ const Navbar = () => {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     return (
-        <AppBar position="static" style={{ backgroundColor: 'rgb(44 130 84)' }}>
+        <AppBar position="static" style={{ backgroundColor: 'teal' }}>
             <Toolbar disableGutters>
                 <Box display="flex" alignItems="center">
                     <Button color="inherit" href="/" style={{ height: '64px', minHeight: '64px' }}>
