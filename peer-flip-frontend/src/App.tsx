@@ -16,7 +16,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useMediaQuery } from '@mui/material';
 import Navbar from './components/Navbar';
 import ExplanationTable from './components/ExplanationTable';
-import { CoinFlipState } from './CoinFlipSession';
+import { CoinFlipStage, CoinFlipState } from './CoinFlipSession';
 import { CoinFlipStateContext } from './contexts/CoinFlipStateContext';
 import ExplanationAccordion from './components/ExplanationAccordion';
 
@@ -143,15 +143,14 @@ function App() {
                   </Box>
                 </Box>
                 {
-                  client && coinFlipState &&
-                  < Box sx={{
+                  client && coinFlipState && [CoinFlipStage.FINISHED, CoinFlipStage.ABORTED].includes(coinFlipState.stage) &&
+                  <Box sx={{
                     ...commonStyles,
                     margin: '1rem',
                     padding: '2rem',
-                    flex: isMobile ? 'initial' : 1,
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    width: '100%',  // Takes full width on small screens
+                    maxWidth: isMobile ? '90%' : '70%',  // Doesn't exceed 70% width on larger screens, 100% on small screens
+                    boxSizing: 'border-box', // Include padding and border in element's total width and height
                   }}>
                     <ExplanationAccordion currentUser={username} />
                   </Box>

@@ -23,3 +23,8 @@ export async function generateCommitment(userId: string, v: number, nonce: numbe
     const input = `${userId}${v}${nonce}`;
     return sha256(input);
 }
+
+export async function doesCommitmentMatch(commitment: string, senderId: string, v: number, nonce: number): Promise<boolean> {
+    const expectedCommitment = await generateCommitment(senderId, v, nonce);
+    return commitment === expectedCommitment;
+}

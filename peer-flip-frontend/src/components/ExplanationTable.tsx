@@ -3,6 +3,7 @@ import { CoinFlipState } from '../CoinFlipSession'; // Import the CoinFlipState 
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { CoinFlipStateContext } from '../contexts/CoinFlipStateContext';
+import { doesCommitmentMatch } from '../flipUtils';
 
 
 
@@ -37,17 +38,18 @@ const ExplanationTable: React.FC<ExplanationTableProps> = ({ currentUser }) => {
         return <></>;
     }
 
-    const { otherUsers, receivedCommitments, revealedValues, revealedNonces, v, nonce, commitment } = coinFlipContext.coinFlipState;
+    const { otherUsers, receivedCommitments, revealedValues, revealedNonces, v, nonce, commitment, commitmentMatch } = coinFlipContext.coinFlipState;
 
     return (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} style={{ maxWidth: '100%', overflowX: 'auto' }}>
             <Table>
                 <TableHead>
                     <TableRow>
                         <BoldTableHeadCell>User ID</BoldTableHeadCell>
-                        <BoldTableHeadCell>Commitment</BoldTableHeadCell>
+                        <BoldTableHeadCell>Commitment [ sha256(User ID || Random Value || Nonce ) ]</BoldTableHeadCell>
                         <BoldTableHeadCell>Random Value</BoldTableHeadCell>
                         <BoldTableHeadCell>Nonce</BoldTableHeadCell>
+                        <BoldTableHeadCell>Matching commitment</BoldTableHeadCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -55,8 +57,9 @@ const ExplanationTable: React.FC<ExplanationTableProps> = ({ currentUser }) => {
                     <TableRow>
                         <StyledTableCell>{currentUser}</StyledTableCell>
                         <StyledTableCell>{commitment}</StyledTableCell>
-                        <StyledTableCell>{v}</StyledTableCell>
-                        <StyledTableCell>{nonce}</StyledTableCell>
+                        <StyledTableCell>{v > 0 ? v : undefined}</StyledTableCell>
+                        <StyledTableCell>{nonce > 0 ? nonce : undefined}</StyledTableCell>
+                        <StyledTableCell>{commitmentMatch.get(currentUser) ? "✅" : "❌"}</StyledTableCell>
                     </TableRow>
                     {/* Display rows for other users */}
                     {otherUsers.map((userId) => (
@@ -65,11 +68,12 @@ const ExplanationTable: React.FC<ExplanationTableProps> = ({ currentUser }) => {
                             <StyledTableCell>{receivedCommitments.get(userId)}</StyledTableCell>
                             <StyledTableCell>{revealedValues.get(userId)}</StyledTableCell>
                             <StyledTableCell>{revealedNonces.get(userId)}</StyledTableCell>
+                            <StyledTableCell>{commitmentMatch.get(userId) ? "✅" : "❌"} </StyledTableCell>
                         </TableRow>
                     ))}
                 </TableBody>
             </Table>
-        </TableContainer>
+        </TableContainer >
     );
 };
 
