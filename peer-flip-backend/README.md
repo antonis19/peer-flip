@@ -1,4 +1,4 @@
-# PeerFlip Frontend
+# PeerFlip Backend
 
 ## How to run
 ```bash
