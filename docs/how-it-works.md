@@ -45,7 +45,7 @@ The core idea is for each participant to commit to a random value which is revea
 The protocol can be visualized in the diagram below:
 
 
-<img src="diagrams/sequence-diagram.png" alt="Sequence Diagram" width="600" />
+<img src="https://raw.githubusercontent.com/antonis19/peer-flip/main/docs/diagrams/sequence-diagram.png" alt="Sequence Diagram" width="600" />
 
 #### Technical Implementation
 
