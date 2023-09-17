@@ -3,5 +3,6 @@
 ## How to run
 ```bash
 npm install
-npm start
+npx tsc *.ts 
+node server.js
 ```
