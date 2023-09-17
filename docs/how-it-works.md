@@ -4,6 +4,7 @@
 ### PeerFlip protocol
 
 PeerFlip is a decentralized method to simulate a coin toss among \(N\) participants. Except for the room server which participants use to join the same room and the STUN server that is needed for the participants to establish the initial P2P connections to each other, the protocol does not rely on any centralized party to calculate the coin flip outcome. 
+
 #### Protocol Explanation
 
 The core idea is for each participant to commit to a random value which is revealed later and used to calculate the coin flip outcome.
@@ -44,8 +45,9 @@ The core idea is for each participant to commit to a random value which is revea
 
 The protocol can be visualized in the diagram below:
 
-
-<img src="https://raw.githubusercontent.com/antonis19/peer-flip/main/docs/diagrams/sequence-diagram.png" alt="Sequence Diagram" width="600" />
+<p align="center">
+  <img src="https://raw.githubusercontent.com/antonis19/peer-flip/main/docs/diagrams/sequence-diagram.png" alt="Sequence Diagram" width="600" />
+</p>
 
 #### Technical Implementation
 
