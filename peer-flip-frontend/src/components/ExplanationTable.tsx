@@ -1,9 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { CoinFlipState } from '../CoinFlipSession'; // Import the CoinFlipState interface
+import React, { useContext, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { CoinFlipStateContext } from '../contexts/CoinFlipStateContext';
-import { doesCommitmentMatch } from '../flipUtils';
 
 
 
