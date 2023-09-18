@@ -47,8 +47,6 @@ export class CoinFlipSession {
             this.coinFlipTimeout = null;
         }
         this.coinFlipState = this.initialCoinFlipState();
-        console.log("RESETING COIN FLIP STATE TO :");
-        console.log(this.coinFlipState);
     }
 
     private initialCoinFlipState() {
@@ -151,7 +149,6 @@ export class CoinFlipSession {
         console.log("SUM = " + sum);
         console.log("MyValue = " + this.coinFlipState.v);
         const flipResult = sum % 2 === 0 ? 'HEADS' : 'TAILS';
-        console.log(`Coin flip outcome: ${flipResult}`);
         this.coinFlipState.flipOutcome = {
             result: flipResult,
             error: undefined

@@ -21,15 +21,15 @@ const Coin: React.FC<CoinProps> = ({ isFlipping, flipOutcome }) => {
     }
 
     function isHeads() {
-        return flipOutcome != undefined && flipOutcome == 'HEADS';
+        return flipOutcome !== undefined && flipOutcome === 'HEADS';
     }
 
     function isTails() {
-        return flipOutcome != undefined && flipOutcome == 'TAILS';
+        return flipOutcome !== undefined && flipOutcome === 'TAILS';
     }
 
     function isUndefined() {
-        return flipOutcome == undefined;
+        return flipOutcome === undefined;
     }
 
     return (

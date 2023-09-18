@@ -54,7 +54,6 @@ export default class RoomClient {
         // Create a new RTCPeerConnection for each existing client in the room
         for (const userId of users) {
             if (userId !== this.userId) {
-                console.log("Initatiating connection to " + userId);
                 const peerConnection = this.createPeerConnection(userId);
                 this.peerConnections.set(userId, peerConnection);
                 this.onPeersUpdatedCallback(this.getPeerNames());
@@ -94,27 +93,27 @@ export default class RoomClient {
 
         // Define the listener functions
         const negotiationNeededListener = async () => {
-            console.log("TRIGGERED onnegotiationneeded");
+            console.log("onnegotiationneeded triggered");
             await this.initiateOffer(targetUserId);
         };
 
         const iceCandidateListener = async (event: RTCPeerConnectionIceEvent) => {
-            console.log("TRIGGERED onicecandidate");
+            console.log("onicecandidate triggered");
             if (event.candidate) {
                 const candidate = event.candidate.toJSON();
-                console.log("Candidate = ");
+                console.log("candidate = ");
                 console.log(candidate);
                 await this.sendSignalingMessage(targetUserId, { type: 'newIceCandidate', candidate: event.candidate.toJSON() });
             }
         };
 
         const iceGatheringStateChangeListener = async () => {
-            console.log("TRIGGERED onicegatheringstatechange");
+            console.log("onicegatheringstatechange triggered");
             console.log(`ICE gathering state changed: ${peerConnection.iceGatheringState}`);
         };
 
         const connectionStateChangeListener = () => {
-            console.log("TRIGGERED onconnectionstatechange");
+            console.log("onconnectionstatechange triggered");
             console.log("Connection established to " + targetUserId);
         };
 
@@ -134,7 +133,7 @@ export default class RoomClient {
 
         // If the current user's ID is lower than the target user's ID, create the data channel
         if (this.userId < targetUserId) {
-            console.log(">Initiating data channel");
+            console.log("initializing data channel...");
             const dataChannelOptions = {
                 ordered: true,  // Guaranteed message delivery
                 maxRetransmits: 20, // Maximum retransmit attempts before message delivery is considered as failed
@@ -143,7 +142,7 @@ export default class RoomClient {
             const dataChannel = peerConnection.createDataChannel('dataChannel', dataChannelOptions);
 
             const openListener = () => {
-                console.log('Data channel open');
+                console.log('data channel open');
             };
             const messageListener = (event: any) => {
                 console.log(`Received message from peer ${targetUserId}:`, event.data);
@@ -167,7 +166,7 @@ export default class RoomClient {
                 const dataChannel = event.channel;
 
                 const openListener = () => {
-                    console.log('Data channel open');
+                    console.log('data channel open');
                 };
                 const messageListener = (event: any) => {
                     console.log(`Received message from peer ${targetUserId}:`, event.data);
@@ -279,8 +278,6 @@ export default class RoomClient {
 
 
     private async handleSignalingMessage(data: any): Promise<void> {
-        console.log("HANDLINGSIGNALINGMESSAGE data: ");
-        console.log(data);
         let peerConnection = this.peerConnections.get(data.senderId);
         if (!peerConnection) {
             console.log("peerConnection is undefined, creating a new one");
@@ -362,21 +359,17 @@ export default class RoomClient {
     // Send a message to a specific data channel
     private async sendToDataChannel(targetUserId: string, message: any): Promise<void> {
         const dataChannel = this.dataChannels.get(targetUserId);
-        console.log("DATACHANNEL = ", dataChannel);
         if (dataChannel && dataChannel.readyState === 'open') {
             console.log(`Sending ${JSON.stringify(message)} to dataChannel for ${targetUserId}`);
             dataChannel.send(JSON.stringify(message));
         } else {
-            console.log("NOT SENDING");
+            console.log("Not sending to datachannel");
         }
     }
 
     // Broadcast a message to all data channels
     private async broadcastToDataChannels(userIds: string[], message: any): Promise<void> {
-        console.log("Starting broadcasting");
         for (const targetUserId of userIds) {
-            console.log(`Sending start to ${targetUserId}`);
-            console.log("STATE = ");
             console.log(this.coinFlipSession.getCoinFlipState());
             await this.sendToDataChannel(targetUserId, message);
         }
@@ -444,7 +437,7 @@ export default class RoomClient {
         }
         switch (data.type) {
             case 'startCoinFlip':
-                console.log("GOT THE COIN FLIP START");
+                console.log("startCoinFlip received");
                 if (this.coinFlipSession.flipCompleted()) {
                     this.coinFlipSession.startNewSessionWithUsers(this.getPeerNames());
                 } else if (![CoinFlipStage.IDLE, CoinFlipStage.STARTED].includes(this.coinFlipSession.getCoinFlipStage())) {
@@ -468,7 +461,7 @@ export default class RoomClient {
 
                 if (this.coinFlipSession.nCoinFlipStarts() === this.coinFlipSession.getOtherUsers().length) {
                     // Need to have waited for the user to broadcast the startCoinFlip before proceeding further
-                    console.log("Waiting CoinFlipStage.STARTED");
+                    console.log("Waiting for CoinFlipStage.STARTED");
                     const conditionReached = await this.waitForCondition(() => this.coinFlipSession.getCoinFlipStage() === CoinFlipStage.STARTED,
                         () => this.coinFlipSession.flipCompleted());
                     if (conditionReached) {
@@ -578,7 +571,6 @@ export default class RoomClient {
         return peerNames;
     }
 
-    // ... (Keep createRoom and joinRoom methods as before)
     createRoom(): void {
         if (this.socket.readyState === WebSocket.OPEN) {
             this.socket.send(JSON.stringify({ type: 'createRoom' }));
@@ -587,7 +579,6 @@ export default class RoomClient {
                 this.socket.send(JSON.stringify({ type: 'createRoom' }));
             });
         }
-        this.showStatus('Creating room...');
     }
 
     joinRoom(roomId: string): void {
@@ -600,11 +591,4 @@ export default class RoomClient {
         }
     }
 
-    showStatus(status: string): void {
-        console.log(status);
-        const statusElement = document.getElementById('status');
-        if (statusElement) {
-            statusElement.textContent = status;
-        }
-    }
 }

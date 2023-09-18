@@ -32,14 +32,12 @@ export function MainLayout() {
 
     useEffect(() => {
         if (username && !clientCreated) {
-        console.log(`CREATING NEW CLIENT for ${username}`);
+        console.log(`Creating new client for ${username}`);
         const newClient = new RoomClient(SERVER_URL, {
             onError: (message: string) => {
             console.log(`Error: ${message}`);
             setErrorMessage(message);
             if (message.includes("already exists")) {
-                console.log("Resetting username to empty string ");
-                console.log(`Setting CLIENT for ${username} to null`);
                 setUsername('');
                 setClient(null);
                 setClientCreated(false);

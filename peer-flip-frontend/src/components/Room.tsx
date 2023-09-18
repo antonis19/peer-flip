@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import RoomClientContext from '../contexts/RoomClientContext';
 import { ErrorContext } from '../contexts/ErrorContext';
 import { RoomStatus } from './RoomStatus';
-import UrlCopy from './UrlCopy';
 import { RoomContext } from '../contexts/RoomContext';
 
 
@@ -27,7 +26,6 @@ const Room: React.FC<RoomProps> = ({ username, connectedPeers }) => {
         if (!username) {
             return;
         }
-        console.log(`INSIDE Room.useEffect() joined `)
         if (!joined && !joining && roomClient && roomId) {
             console.log("Not Joined, Trying to join with username " + username);
             setJoining(true);
@@ -48,7 +46,6 @@ const Room: React.FC<RoomProps> = ({ username, connectedPeers }) => {
         }
 
         if (roomClient) {
-            console.log("RoomClient socket ready state = " + roomClient.socket.readyState);
             roomClient.callbacks.onRoomJoined = handleRoomJoined;
             roomClient.callbacks.onUserDisconnected = handleUserDisconnected;
         }

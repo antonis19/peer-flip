@@ -5,7 +5,6 @@ import FileCopyOutlinedIcon from '@mui/icons-material/FileCopyOutlined';
 import Tooltip from '@mui/material/Tooltip';
 import styles from '../styles/UrlCopy.module.css'
 import { Box } from '@mui/system';
-import { Typography } from '@mui/material';
 
 const UrlCopy: React.FC = () => {
     const [copySuccess, setCopySuccess] = useState<string>('');

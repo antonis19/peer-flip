@@ -67,7 +67,6 @@ const CoinFlip: React.FC = () => {
                 console.log(">>>>>>> RESULT = ", flipOutcome?.result);
                 setFlipOutcome(flipOutcome?.result);
                 setStatusMessage(getStatusMessageFromState(state));
-                console.log(">>>>>>>>>>>>> CALLING setCoinFlipState(state");
                 // needed because the React's use effect in the CoinFlipStateContext does not listen to in-place modifications of the state object
                 const updatedState = { ...state };
                 setCoinFlipState(updatedState);
