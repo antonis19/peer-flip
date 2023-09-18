@@ -24,8 +24,8 @@ export function MainLayout() {
     const [coinFlipState, setCoinFlipState] = useState<CoinFlipState | null>(null);
     const [joining, setJoining] = useState<boolean>(false);
     const [joined, setJoined] = useState<boolean>(false);
-  
-    const SERVER_URL = 'wss://shade-knowledgeable-elderberry.glitch.me/';
+
+    const SERVER_URL = process.env.REACT_APP_SERVER_URL || 'wss://localhost:9090';
   
     const isMobile = useMediaQuery('(max-width: 600px)');
 
