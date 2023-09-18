@@ -49,11 +49,6 @@ server.on('connection', (socket: WebSocket) => {
         }
 
         if (data.type === 'joinRoom') {
-            console.log("BEFORE:");
-            console.log("Rooms = ");
-            console.log(rooms);
-            console.log("Data = ")
-            console.log(data);
             const roomIdx = rooms.findIndex((room) => room.roomId === data.roomId);
             if (roomIdx != -1) {
                 const room = rooms[roomIdx];
@@ -71,13 +66,10 @@ server.on('connection', (socket: WebSocket) => {
             } else {
                 socket.send(JSON.stringify({ type: 'error', message: 'Room not found' }));
             }
-            console.log("After:");
-            console.log("Rooms = ");
-            console.log(rooms);
         }
 
         if (['offer', 'answer', 'newIceCandidate'].includes(data.type)) {
-            console.log("GOT SIGNALING MESSAGE: ");
+            console.log("Received signaling message: ");
             console.log(data);
             // Forward signaling messages to the appropriate receiver
             forwardSignalingMessage(data.roomId, data.targetUserId, message.toString());
@@ -101,7 +93,7 @@ function forwardSignalingMessage(roomId: string, targetUserId: string, message: 
     console.log("Trying to forward signaling message to userId= " + room.users[receiverIndex]);
     const receiverSocket = room.clients[receiverIndex];
     if (receiverSocket.readyState === WebSocket.OPEN) {
-        console.log("Sending signalling message:");
+        console.log("Sending signaling message:");
         console.log(message);
         receiverSocket.send(message);
     }
